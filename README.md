@@ -17,10 +17,7 @@
 
 ## Enunciado <a name = "enunciado"></a>
 
-Se pide implementar un Arbol Binario de Búsqueda. Para ello se brindan las firmas de las funciones públicas a implementar y se deja a criterio del alumno la creación de las funciones privadas del TDA para el correcto funcionamiento del Arbol cumpliendo con las buenas prácticas de programación.
-
-
-Adicionalmente se pide la implementación de un iterador interno para la estructura.
+/*Completar*/
 
 
 ## 🏁 Compilacion y Ejecucion <a name = "compilacion_ejecucion"></a>
@@ -36,5 +33,5 @@ Adicionalmente se pide la implementación de un iterador interno para la estruct
     `````
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDk1ODg3NTQwXX0=
+eyJoaXN0b3J5IjpbMTk2MDc0OTg2Miw0OTU4ODc1NDBdfQ==
 -->
