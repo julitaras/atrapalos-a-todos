@@ -93,59 +93,42 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
         return ERROR;
     }
 
-    especie_pokemon_t* especie_buscada = arbol_buscar(pokedex->pokemones, &nueva_especie);
-    if(!especie_buscada){
-        
-        especie_pokemon_t* especie = malloc(sizeof(especie_pokemon_t));
+    especie_pokemon_t* especie = arbol_buscar(pokedex->pokemones, &nueva_especie);
+    if(!especie){ 
+        especie = malloc(sizeof(especie_pokemon_t));
         if(!especie){
             return ERROR;
         }
-
-        /*INICIALIZO*/
-        especie->numero = nueva_especie.numero;
-        strcpy(especie->nombre, nueva_especie.nombre);
-        strcpy(especie->descripcion, nueva_especie.descripcion);
-         
-         printf("ESPECIE NUMERO %i\n", especie->numero);
-         printf("ESPECIE NOMBRE %s\n", especie->nombre);
-         printf("ESPECIE DESC %s\n", especie->descripcion);
-        
-        particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
-        if(!particular){
-            return ERROR;
-        }
-
-        /*INICIALIZO*/
-        strcpy(particular->nombre, nuevo_particular.nombre);
-        particular->nivel = nuevo_particular.nivel;
-        particular->capturado = nuevo_particular.capturado;
-
-         printf("PARTICULAR NUMERO %s\n", particular->nombre);
-         printf("PARTICULAR NUMERO %i\n", particular->nivel);
-         printf("PARTICULAR NUMERO %d\n", particular->capturado);
-        
-        /*Creamos la lista e insertamos*/
-        especie->pokemones = lista_crear();
-        if(!especie->pokemones){
-            return ERROR;
-        }
-        int exito = lista_insertar(especie->pokemones, particular);
-        if(exito == ERROR){
-            return ERROR;
-        }
-
-        /*FINAL*/
-        int ver = arbol_insertar(pokedex->pokemones, especie);
-        if(ver == ERROR){
-            return ERROR;
-        }
-
-    }else {
-       
-        especie_buscada->numero = nueva_especie.numero;
-        strcpy(especie_buscada->nombre, nueva_especie.nombre);
-        strcpy(especie_buscada->descripcion, nueva_especie.descripcion);
     }
+
+    especie->numero = nueva_especie.numero;
+    strcpy(especie->nombre, nueva_especie.nombre);
+    strcpy(especie->descripcion, nueva_especie.descripcion);
+    
+    particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
+    if(!particular){
+        return ERROR;
+    }
+
+    strcpy(particular->nombre, nuevo_particular.nombre);
+    particular->nivel = nuevo_particular.nivel;
+    particular->capturado = nuevo_particular.capturado;
+
+    especie->pokemones = lista_crear();
+    if(!especie->pokemones){
+        return ERROR;
+    }
+        
+    int exito = lista_insertar(especie->pokemones, particular);
+    if(exito == ERROR){
+        return ERROR;
+    }
+
+    int ver = arbol_insertar(pokedex->pokemones, especie);
+    if(ver == ERROR){
+        return ERROR;
+    }
+
     return EXITO;
 }
 
@@ -174,20 +157,17 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
 
         int agregado_abb = agregar_especie(pokedex, nuevo_pokemon, particular_pokemon);
         if(agregado_abb == ERROR){
-            printf("FAIL AGREGAR A ABB");
             fclose(pokemones_f);
             return ERROR;
         }
+        
         int agregado_listas = agregar_pokemon_listas(pokedex, particular_pokemon);
         if(agregado_listas == ERROR){
             fclose(pokemones_f);
             return ERROR;
         }
     }
-    //verificar que la especie no exista, si existe solo actualizar la lista
-    // if(leidos != 6){
-    //     /*Fijarse en tp pokemones*/
-    // }
+
     fclose(pokemones_f);
 
     return EXITO;   
