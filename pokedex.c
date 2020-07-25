@@ -5,6 +5,7 @@
 #define EXITO 0
 #define ERROR -1
 #define FORMATO_LECTURA_AVISTAMIENTOS "%i;%[^;];%[^;];%[^;];%i;%c\n"
+#define FORMATO_LECTURA_EVOLUCIONES "%i;%[^;];%i;%[^;];%[^\n]\n"
 
 /*Funcion comparadora de elementos*/
 //Adaptar a lo que va a ser la clave
@@ -58,6 +59,7 @@ pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
 }
 
 int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_particular){
+    
     if(!pokedex){
         return ERROR;
     }
@@ -67,7 +69,6 @@ int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_partic
         return ERROR;
     }
 
-    /*INICIALIZO*/
     strcpy(particular->nombre, nuevo_particular.nombre);
     particular->nivel = nuevo_particular.nivel;
     particular->capturado = nuevo_particular.capturado;
@@ -89,6 +90,7 @@ int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_partic
 
 /*Agrega el pokemon a la respectiva estructura, con los datos provewnientes por parametros*/
 int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particular_pokemon_t nuevo_particular){
+    
     if(!pokedex){
         return ERROR;
     }
@@ -132,12 +134,12 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
     return EXITO;
 }
 
-
 int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
+    
     if(!pokedex){
         return ERROR;
     }
-    printf("%s\n", ruta_archivo);
+
     FILE *pokemones_f = fopen(ruta_archivo, "r");
     if (pokemones_f == NULL) {
         return ERROR;
@@ -160,7 +162,7 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
             fclose(pokemones_f);
             return ERROR;
         }
-        
+
         int agregado_listas = agregar_pokemon_listas(pokedex, particular_pokemon);
         if(agregado_listas == ERROR){
             fclose(pokemones_f);
@@ -177,13 +179,96 @@ void imprimir_pokedex(pokedex_t* pokedex){
     printf("El dueño de la pokedex es: %s\n", pokedex->nombre_entrenador);
 }
 
+int evolucionar_pokemon(pokedex_t*pokedex, especie_pokemon_t nueva_especie, especie_pokemon_t actual_especie, particular_pokemon_t particular_pokemon){
+    
+    if(!pokedex){
+        return ERROR;
+    }
+    
+    especie_pokemon_t* especie = arbol_buscar(pokedex->pokemones, &nueva_especie);
+    if(!especie){ 
+        especie = malloc(sizeof(especie_pokemon_t));
+        if(!especie){
+            return ERROR;
+        }
+        //si la especie exite estamos seguros de que va a tenr la misma descripcion que la nueva ?
+        especie->numero = nueva_especie.numero;
+        strcpy(especie->nombre, nueva_especie.nombre);
+        strcpy(especie->descripcion, nueva_especie.descripcion);
 
+        particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
+        if(!particular){
+            return ERROR;
+        }
+
+        strcpy(particular->nombre, particular_pokemon.nombre);
+        particular->nivel = particular_pokemon.nivel;
+        particular->capturado = particular_pokemon.capturado;
+
+        especie->pokemones = lista_crear();
+        if(!especie->pokemones){
+            return ERROR;
+        }
+            
+        int exito = lista_insertar(especie->pokemones, particular);
+        if(exito == ERROR){
+            return ERROR;
+        }
+
+        int ver = arbol_insertar(pokedex->pokemones, especie);
+        if(ver == ERROR){
+            return ERROR;
+        }
+    }else{
+        //Existe en el abb, debo agarrar el elemento de lista o lo creo desde 0 ?, recorro la lista
+        for (size_t i = 0; i < lista_elementos(especie->pokemones); i++){
+            //cuando encontremos al pokemon por nombre sabremos la posicion
+            // if(*(especie->pokemones[i]).nombre == "jUli"){
+
+            // }
+        }
+        
+        //lista_borrar_de_posicion() hay que pasar la posicion en la que esta, quizas se deba recorrer la lista y saber la posicion en la que esta el elemento (pokemon particular)
+    }
+    
+    return EXITO;
+}
+
+int pokedex_evolucionar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
+    if(!pokedex){
+        return ERROR;
+    }
+
+    FILE *pokemones_f = fopen(ruta_archivo, "r");
+    if (pokemones_f == NULL) {
+        return ERROR;
+    }
+
+    int leidos = 0;
+    especie_pokemon_t nueva_especie;
+    especie_pokemon_t actual_especie;
+    particular_pokemon_t particular_pokemon;
+    char capturado;
+    
+    while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_EVOLUCIONES, &actual_especie.numero, particular_pokemon.nombre, actual_especie.descripcion, nueva_especie.nombre, nueva_especie.descripcion)) == 5){
+        
+        int evolucion_exito = evolucionar_pokemon(pokedex, nueva_especie, actual_especie, particular_pokemon);
+        if(evolucion_exito == ERROR){
+            fclose(pokemones_f);
+            return ERROR;
+        }
+    }
+    // Si no tengo la especie la empiezo a conocer en la evolucion
+    //
+    return EXITO;
+}
 
 int main(){
-    char* ruta = "avistamientos.txt";
+    char* ruta_avistamientos = "avistamientos.txt";
+    char* ruta_evoluciones = "evoluciones.txt";
     pokedex_t* pokedex = pokedex_crear("JULIETA");
-   // imprimir_pokedex(pokedex);
-    int exito = pokedex_avistar(pokedex, ruta);
+    //imprimir_pokedex(pokedex);
+    int exito = pokedex_avistar(pokedex, ruta_avistamientos);
     printf("%i", exito);
     return 1;
 }
