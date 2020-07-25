@@ -10,11 +10,24 @@
 //Adaptar a lo que va a ser la clave
 int comparacion(void* elem1, void* elem2){
 
-    if(!elem1 || !elem2){
-		return 0;
+    if(!elem1 && elem2){
+        return -1;
+    }
+    if(elem1 && !elem2){
+        return 1;
+    }
+    if(!elem1 && !elem2){
+        return 0;
     }
 
-    return strcmp((char*)elem1, (char*)elem2);
+    if(((especie_pokemon_t*)elem1)->numero < ((especie_pokemon_t*)elem2)->numero){
+        return -1;
+    }
+    if(((especie_pokemon_t*)elem1)->numero > ((especie_pokemon_t*)elem2)->numero){
+        return 1;
+    }
+
+    return 0;
 }
 
 pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
@@ -43,7 +56,6 @@ pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
 
     return pokedex;
 }
-
 
 int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_particular){
     if(!pokedex){
@@ -75,53 +87,65 @@ int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_partic
     return EXITO;
 }
 
-/*Quizas queda mejor el nombre de agregar especie*/
 /*Agrega el pokemon a la respectiva estructura, con los datos provewnientes por parametros*/
 int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particular_pokemon_t nuevo_particular){
     if(!pokedex){
         return ERROR;
     }
 
-    //Antes de crear en la memoria, busco en el abb si existe el elemento(especie de pokemon) con ese nombre
-    especie_pokemon_t* especie = malloc(sizeof(especie_pokemon_t));
-    if(!especie){
-        printf("ERROR MALLOC ESPECIE");
-        return ERROR;
-    }
+    especie_pokemon_t* especie_buscada = arbol_buscar(pokedex->pokemones, &nueva_especie);
+    if(!especie_buscada){
+        
+        especie_pokemon_t* especie = malloc(sizeof(especie_pokemon_t));
+        if(!especie){
+            return ERROR;
+        }
 
-    /*INICIALIZO*/
-    especie->numero = nueva_especie.numero;
-    strcpy(especie->nombre, nueva_especie.nombre);
-    strcpy(especie->descripcion, nueva_especie.descripcion);
-    
-    particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
-    if(!particular){
-        printf("ERROR MALLOC PARTICULAR");
-        return ERROR;
-    }
+        /*INICIALIZO*/
+        especie->numero = nueva_especie.numero;
+        strcpy(especie->nombre, nueva_especie.nombre);
+        strcpy(especie->descripcion, nueva_especie.descripcion);
+         
+         printf("ESPECIE NUMERO %i\n", especie->numero);
+         printf("ESPECIE NOMBRE %s\n", especie->nombre);
+         printf("ESPECIE DESC %s\n", especie->descripcion);
+        
+        particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
+        if(!particular){
+            return ERROR;
+        }
 
-    /*INICIALIZO*/
-    strcpy(particular->nombre, nuevo_particular.nombre);
-    particular->nivel = nuevo_particular.nivel;
-    particular->capturado = nuevo_particular.capturado;
+        /*INICIALIZO*/
+        strcpy(particular->nombre, nuevo_particular.nombre);
+        particular->nivel = nuevo_particular.nivel;
+        particular->capturado = nuevo_particular.capturado;
 
-    /*Creamos la lista e insertamos*/
-    especie->pokemones = lista_crear();
-    if(!especie->pokemones){
-        return ERROR;
-    }
-    int exito = lista_insertar(especie->pokemones, particular);
-    if(exito == ERROR){
-        printf("ERROR INSERTAR PARTICULAR");
-        return ERROR;
-    }
+         printf("PARTICULAR NUMERO %s\n", particular->nombre);
+         printf("PARTICULAR NUMERO %i\n", particular->nivel);
+         printf("PARTICULAR NUMERO %d\n", particular->capturado);
+        
+        /*Creamos la lista e insertamos*/
+        especie->pokemones = lista_crear();
+        if(!especie->pokemones){
+            return ERROR;
+        }
+        int exito = lista_insertar(especie->pokemones, particular);
+        if(exito == ERROR){
+            return ERROR;
+        }
 
-    /*FINAL*/
-    int ver = arbol_insertar(pokedex->pokemones, especie);
-    if(ver == ERROR){
-        return ERROR;
+        /*FINAL*/
+        int ver = arbol_insertar(pokedex->pokemones, especie);
+        if(ver == ERROR){
+            return ERROR;
+        }
+
+    }else {
+       
+        especie_buscada->numero = nueva_especie.numero;
+        strcpy(especie_buscada->nombre, nueva_especie.nombre);
+        strcpy(especie_buscada->descripcion, nueva_especie.descripcion);
     }
-    
     return EXITO;
 }
 
@@ -178,7 +202,7 @@ void imprimir_pokedex(pokedex_t* pokedex){
 int main(){
     char* ruta = "avistamientos.txt";
     pokedex_t* pokedex = pokedex_crear("JULIETA");
-    imprimir_pokedex(pokedex);
+   // imprimir_pokedex(pokedex);
     int exito = pokedex_avistar(pokedex, ruta);
     printf("%i", exito);
     return 1;
