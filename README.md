@@ -31,7 +31,3 @@
     `````c
         ./pokedex
     `````
-
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk2MDc0OTg2Miw0OTU4ODc1NDBdfQ==
--->
