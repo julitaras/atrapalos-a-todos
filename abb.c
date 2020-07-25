@@ -69,6 +69,10 @@ void* arbol_buscar(abb_t* arbol, void* elemento){
 
    nodo_abb_t* nodo_buscado = arbol_buscar_nodo(arbol->nodo_raiz, arbol->comparador, elemento);
 
+   if(!nodo_buscado){
+       return NULL;
+   }
+
    return nodo_buscado->elemento;
 }
 
