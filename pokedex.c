@@ -77,7 +77,7 @@ int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_partic
     if(encolo == ERROR){
         return ERROR;
     }
-    
+
     if(nuevo_particular.capturado){
         int apilo = lista_apilar(pokedex->ultimos_capturados, particular);
         if(apilo == ERROR){
@@ -276,16 +276,59 @@ int pokedex_evolucionar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
     return EXITO;
 }
 
+void pokedex_ultimos_capturados(pokedex_t* pokedex){
+    
+    if(!pokedex){
+        return;
+    }
+
+    printf("\nULTIMOS CAPTURADOS\n");
+    size_t tam = lista_elementos(pokedex->ultimos_capturados);
+    for (size_t i = 0; i < tam; i++){
+        
+        particular_pokemon_t* pokemon = lista_ultimo(pokedex->ultimos_capturados);
+        
+        printf("\t- Pokemon: %s\n", pokemon->nombre);
+        printf("\t\t Nivel: %i\n", pokemon->nivel);
+        
+        int exito = lista_desapilar(pokedex->ultimos_capturados);
+        if(exito == ERROR){
+            return;
+        }
+    }
+}
+
+void pokedex_ultimos_vistos(pokedex_t* pokedex){
+    
+    if(!pokedex){
+        return;
+    }
+
+    printf("\nULTIMOS VISTOS\n");
+    size_t tam = lista_elementos(pokedex->ultimos_vistos);
+    for (size_t i = 0; i < tam; i++){
+        
+        particular_pokemon_t* pokemon = lista_primero(pokedex->ultimos_vistos);
+        
+        printf("\t- Pokemon: %s\n", pokemon->nombre);
+        printf("\t\t Nivel: %i\n", pokemon->nivel);
+        
+        int exito = lista_desencolar(pokedex->ultimos_vistos);
+        if(exito == ERROR){
+            return;
+        }
+    }
+}
+
 int main(){
     char* ruta_avistamientos = "avistamientos.txt";
-    char* ruta_evoluciones = "evoluciones.txt";
+  //  char* ruta_evoluciones = "evoluciones.txt";
     pokedex_t* pokedex = pokedex_crear("JULIETA");
     //imprimir_pokedex(pokedex);
     int exito = pokedex_avistar(pokedex, ruta_avistamientos);
-
-
-
-    exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
+   // exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
+    pokedex_ultimos_capturados(pokedex);
+    pokedex_ultimos_vistos(pokedex);
     printf("%i", exito);
     return 1;
 }
