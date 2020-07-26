@@ -171,7 +171,7 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
     }
 
     fclose(pokemones_f);
-
+    
     return EXITO;   
 }
 
@@ -179,56 +179,73 @@ void imprimir_pokedex(pokedex_t* pokedex){
     printf("El dueño de la pokedex es: %s\n", pokedex->nombre_entrenador);
 }
 
-int evolucionar_pokemon(pokedex_t*pokedex, especie_pokemon_t nueva_especie, especie_pokemon_t actual_especie, particular_pokemon_t particular_pokemon){
+int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, especie_pokemon_t actual_especie, particular_pokemon_t particular_pokemon){
     
     if(!pokedex){
         return ERROR;
     }
     
     especie_pokemon_t* especie = arbol_buscar(pokedex->pokemones, &nueva_especie);
+    
     if(!especie){ 
         especie = malloc(sizeof(especie_pokemon_t));
         if(!especie){
             return ERROR;
         }
-        //si la especie exite estamos seguros de que va a tenr la misma descripcion que la nueva ?
+
         especie->numero = nueva_especie.numero;
         strcpy(especie->nombre, nueva_especie.nombre);
         strcpy(especie->descripcion, nueva_especie.descripcion);
 
-        particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
-        if(!particular){
-            return ERROR;
-        }
+        especie_pokemon_t* especie_actual = arbol_buscar(pokedex->pokemones, &actual_especie);
+        for (size_t i = 0; i < lista_elementos(especie_actual->pokemones); i++){
+            particular_pokemon_t* elem = lista_elemento_en_posicion(especie_actual->pokemones, i); 
 
-        strcpy(particular->nombre, particular_pokemon.nombre);
-        particular->nivel = particular_pokemon.nivel;
-        particular->capturado = particular_pokemon.capturado;
+            if(strcmp(elem->nombre, particular_pokemon.nombre) == 0){
+                especie->pokemones = lista_crear();
+                if(!especie->pokemones){
+                    return ERROR;
+                }
+                
+                int exito = lista_insertar(especie->pokemones, elem);
+                if(exito == ERROR){
+                    return ERROR;
+                }
 
-        especie->pokemones = lista_crear();
-        if(!especie->pokemones){
-            return ERROR;
-        }
-            
-        int exito = lista_insertar(especie->pokemones, particular);
-        if(exito == ERROR){
-            return ERROR;
+                int err = lista_borrar_de_posicion(especie_actual->pokemones, i);
+                if(err == ERROR){
+                    return ERROR;
+                }
+            }
         }
 
         int ver = arbol_insertar(pokedex->pokemones, especie);
         if(ver == ERROR){
             return ERROR;
         }
-    }else{
-        //Existe en el abb, debo agarrar el elemento de lista o lo creo desde 0 ?, recorro la lista
-        for (size_t i = 0; i < lista_elementos(especie->pokemones); i++){
-            //cuando encontremos al pokemon por nombre sabremos la posicion
-            // if(*(especie->pokemones[i]).nombre == "jUli"){
 
-            // }
-        }
+    }else{
+        //Existe en el elemento en el abb, debo agarrar el elemento de lista o lo creo desde 0 ?, recorro la lista
+        //debo buscar en el arbol, el elemento donde se encuentra mi pokemon en la lista, despues borrarlo
+        especie_pokemon_t* especie_actual = arbol_buscar(pokedex->pokemones, &actual_especie);
         
-        //lista_borrar_de_posicion() hay que pasar la posicion en la que esta, quizas se deba recorrer la lista y saber la posicion en la que esta el elemento (pokemon particular)
+        for (size_t i = 0; i < lista_elementos(especie_actual->pokemones); i++){
+            
+            particular_pokemon_t* elem = lista_elemento_en_posicion(especie_actual->pokemones, i); 
+
+            if(strcmp(elem->nombre, particular_pokemon.nombre) == 0){
+                
+                int exito = lista_insertar(especie->pokemones, elem);
+                if(exito == ERROR){
+                    return ERROR;
+                }
+
+                int err = lista_borrar_de_posicion(especie_actual->pokemones, i);
+                if(err == ERROR){
+                    return ERROR;
+                }
+            }
+        }
     }
     
     return EXITO;
@@ -248,18 +265,14 @@ int pokedex_evolucionar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
     especie_pokemon_t nueva_especie;
     especie_pokemon_t actual_especie;
     particular_pokemon_t particular_pokemon;
-    char capturado;
     
-    while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_EVOLUCIONES, &actual_especie.numero, particular_pokemon.nombre, actual_especie.descripcion, nueva_especie.nombre, nueva_especie.descripcion)) == 5){
-        
+    while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_EVOLUCIONES, &actual_especie.numero, particular_pokemon.nombre, &nueva_especie.numero, nueva_especie.nombre, nueva_especie.descripcion)) == 5){ 
         int evolucion_exito = evolucionar_pokemon(pokedex, nueva_especie, actual_especie, particular_pokemon);
         if(evolucion_exito == ERROR){
             fclose(pokemones_f);
             return ERROR;
         }
     }
-    // Si no tengo la especie la empiezo a conocer en la evolucion
-    //
     return EXITO;
 }
 
@@ -269,6 +282,10 @@ int main(){
     pokedex_t* pokedex = pokedex_crear("JULIETA");
     //imprimir_pokedex(pokedex);
     int exito = pokedex_avistar(pokedex, ruta_avistamientos);
+
+
+
+    exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
     printf("%i", exito);
     return 1;
 }
