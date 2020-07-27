@@ -320,6 +320,12 @@ void pokedex_ultimos_vistos(pokedex_t* pokedex){
     }
 }
 
+void pokedex_informacion(pokedex_t* pokedex, int numero_pokemon, char nombre_pokemon[MAX_NOMBRE]){
+    if(!pokedex){
+        return;
+    }
+}
+
 int main(){
     char* ruta_avistamientos = "avistamientos.txt";
   //  char* ruta_evoluciones = "evoluciones.txt";
