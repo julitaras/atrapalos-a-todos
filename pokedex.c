@@ -380,7 +380,7 @@ void pokedex_destruir(pokedex_t* pokedex){
     if(!pokedex){
         return;
     }
-
+//REVISAR PARA QUE COSAS PIDO MEMORIA, HACER SEGUIMIENTO EN PAPEL
     // size_t tam = lista_elementos(pokedex->ultimos_capturados);
     // for (size_t i = 0; i < tam; i++){
     //     particular_pokemon_t* elem = lista_elemento_en_posicion(pokedex->ultimos_capturados, i);
@@ -401,6 +401,24 @@ void pokedex_destruir(pokedex_t* pokedex){
     
     arbol_destruir(pokedex->pokemones);
     free(pokedex);
+}
+
+int pokedex_apagar(pokedex_t* pokedex){
+    if(!pokedex){
+        return ERROR;
+    }
+    //Tengo que guardar la info en pokedex.txt
+    FILE* fichero;
+
+    fichero = fopen("pokedex.txt", "wt");
+    fputs(pokedex->nombre_entrenador,fichero);
+    //deberia recorrer el arbol y sus respectivas listas guardando. Para que al prenderla me quede igual. Deberia poner la raiz primero en el archivo.
+    //Primer linea, nombre de entrenador
+    //E;numero_pokemon;nombre_especie; descripción_especie
+    //P;nombre_pokemon;nivel;capturado(S/N)
+    //GUARDAR EL ARBOL EN PREORDEN
+    fclose(fichero);
+    return EXITO;
 }
 
 int main(){
