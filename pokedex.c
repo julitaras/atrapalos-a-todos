@@ -30,28 +30,22 @@ int comparacion(void* elem1, void* elem2){
     return 0;
 }
 
-// void especie_destruir(void* especie){
-//     if(!especie){
-//         return;
-//     }
+void especie_destruir(void* especie){
+    if(!especie){
+        return;
+    }
     
-//     // especie_pokemon_t* aux = ((especie_pokemon_t*) especie);
+    especie_pokemon_t* aux = ((especie_pokemon_t*) especie);
     
-//     // size_t s  }
-    
-//     // especie_pokemon_t* aux = ((especie_pokemon_t*) especie);
-    
-//     // size_ize = lista_elementos(((especie_pokemon_t*) especie)->pokemones);
-//     // printf("\n\nARBOL %li", size);
-    
-//     for (size_t i = 0; i < lista_elementos(((especie_pokemon_t*) especie)->pokemones); i++){
-//         particular_pokemon_t* elem = lista_elemento_en_posicion(((especie_pokemon_t*) especie)->pokemones, i);
-//         printf("\n\nELEMENTO %s", elem->nombre);
-//         free(elem);
-//     }
-//     //lista_destruir(((especie_pokemon_t*) especie)->pokemones);
-//     free(((especie_pokemon_t*) especie));
-// }
+    size_t tam = lista_elementos(aux->pokemones);
+    for (size_t i = 0; i < tam; i++){
+        particular_pokemon_t* elem = lista_elemento_en_posicion(aux->pokemones, i);
+        free(elem); 
+    }
+    lista_destruir(aux->pokemones);
+
+    free(especie);
+}
 
 pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
     pokedex_t* pokedex = malloc(sizeof(pokedex_t));
@@ -62,10 +56,10 @@ pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
 
    strcpy(pokedex->nombre_entrenador, entrenador);
 
-    // pokedex->pokemones = arbol_crear(comparacion, NULL);
-    // if(!pokedex->pokemones){
-    //     return NULL;
-    // }
+    pokedex->pokemones = arbol_crear(comparacion, especie_destruir);
+    if(!pokedex->pokemones){
+        return NULL;
+    }
 
     pokedex->ultimos_capturados = lista_crear();
     if(!pokedex->ultimos_capturados){
@@ -138,11 +132,17 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
             free(especie);
             return ERROR;
         }
-    }
 
-    especie->numero = nueva_especie.numero;
-    strcpy(especie->nombre, nueva_especie.nombre);
-    strcpy(especie->descripcion, nueva_especie.descripcion);
+        especie->numero = nueva_especie.numero;
+        strcpy(especie->nombre, nueva_especie.nombre);
+        strcpy(especie->descripcion, nueva_especie.descripcion);
+
+        int exito_abb = arbol_insertar(pokedex->pokemones, especie);
+        if(exito_abb == ERROR){
+            return ERROR;
+        }
+    }
+//revisar si queda lindo la func 
 
     particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
     if(!particular){
@@ -160,13 +160,7 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
         free(especie);
         return ERROR;
     }
-
-    int exito_abb = arbol_insertar(pokedex->pokemones, especie);
-    if(exito_abb == ERROR){
-        free(especie);
-        free(particular);
-        return ERROR;
-    }
+    
 
     return EXITO;
 }
@@ -194,11 +188,11 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
             particular_pokemon.capturado = true;
         }
 
-        // int agregado_abb = agregar_especie(pokedex, nuevo_pokemon, particular_pokemon);
-        // if(agregado_abb == ERROR){
-        //     fclose(pokemones_f);
-        //     return ERROR;
-        // }
+        int agregado_abb = agregar_especie(pokedex, nuevo_pokemon, particular_pokemon);
+        if(agregado_abb == ERROR){
+            fclose(pokemones_f);
+            return ERROR;
+        }
 
         int agregado_listas = agregar_pokemon_listas(pokedex, particular_pokemon);
         if(agregado_listas == ERROR){
@@ -406,7 +400,7 @@ void pokedex_destruir(pokedex_t* pokedex){
 
 //REVISAR PARA QUE COSAS PIDO MEMORIA, HACER SEGUIMIENTO EN PAPEL
     
-    //arbol_destruir(pokedex->pokemones);
+    arbol_destruir(pokedex->pokemones);
 
     free(pokedex);
 }
