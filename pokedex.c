@@ -37,7 +37,11 @@ int comparacion(void* elem1, void* elem2){
     
 //     // especie_pokemon_t* aux = ((especie_pokemon_t*) especie);
     
-//     // size_t size = lista_elementos(((especie_pokemon_t*) especie)->pokemones);
+//     // size_t s  }
+    
+//     // especie_pokemon_t* aux = ((especie_pokemon_t*) especie);
+    
+//     // size_ize = lista_elementos(((especie_pokemon_t*) especie)->pokemones);
 //     // printf("\n\nARBOL %li", size);
     
 //     for (size_t i = 0; i < lista_elementos(((especie_pokemon_t*) especie)->pokemones); i++){
@@ -58,10 +62,10 @@ pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
 
    strcpy(pokedex->nombre_entrenador, entrenador);
 
-    pokedex->pokemones = arbol_crear(comparacion, especie_destruir);
-    if(!pokedex->pokemones){
-        return NULL;
-    }
+    // pokedex->pokemones = arbol_crear(comparacion, NULL);
+    // if(!pokedex->pokemones){
+    //     return NULL;
+    // }
 
     pokedex->ultimos_capturados = lista_crear();
     if(!pokedex->ultimos_capturados){
@@ -131,6 +135,7 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
 
         especie->pokemones = lista_crear();
         if(!especie->pokemones){
+            free(especie);
             return ERROR;
         }
     }
@@ -141,6 +146,7 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
 
     particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
     if(!particular){
+        free(especie);
         return ERROR;
     }
 
@@ -150,11 +156,15 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
     
     int exito_lista = lista_insertar(especie->pokemones, particular);
     if(exito_lista == ERROR){
+        free(particular);
+        free(especie);
         return ERROR;
     }
 
     int exito_abb = arbol_insertar(pokedex->pokemones, especie);
     if(exito_abb == ERROR){
+        free(especie);
+        free(particular);
         return ERROR;
     }
 
@@ -184,17 +194,17 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
             particular_pokemon.capturado = true;
         }
 
-        int agregado_abb = agregar_especie(pokedex, nuevo_pokemon, particular_pokemon);
-        if(agregado_abb == ERROR){
-            fclose(pokemones_f);
-            return ERROR;
-        }
-
-        // int agregado_listas = agregar_pokemon_listas(pokedex, particular_pokemon);
-        // if(agregado_listas == ERROR){
+        // int agregado_abb = agregar_especie(pokedex, nuevo_pokemon, particular_pokemon);
+        // if(agregado_abb == ERROR){
         //     fclose(pokemones_f);
         //     return ERROR;
         // }
+
+        int agregado_listas = agregar_pokemon_listas(pokedex, particular_pokemon);
+        if(agregado_listas == ERROR){
+            fclose(pokemones_f);
+            return ERROR;
+        }
     }
 
     fclose(pokemones_f);
@@ -380,26 +390,24 @@ void pokedex_destruir(pokedex_t* pokedex){
     if(!pokedex){
         return;
     }
+    size_t tam = lista_elementos(pokedex->ultimos_capturados);
+    for (size_t i = 0; i < tam; i++){
+        particular_pokemon_t* elem = lista_elemento_en_posicion(pokedex->ultimos_capturados, i);
+        free(elem); 
+    }
+    lista_destruir(pokedex->ultimos_capturados);
+    
+    size_t size = lista_elementos(pokedex->ultimos_vistos);
+    for (size_t i = 0; i < size; i++){
+        particular_pokemon_t* elem = lista_elemento_en_posicion(pokedex->ultimos_vistos, i);
+        free(elem); 
+    }
+    lista_destruir(pokedex->ultimos_vistos);
+
 //REVISAR PARA QUE COSAS PIDO MEMORIA, HACER SEGUIMIENTO EN PAPEL
-    // size_t tam = lista_elementos(pokedex->ultimos_capturados);
-    // for (size_t i = 0; i < tam; i++){
-    //     particular_pokemon_t* elem = lista_elemento_en_posicion(pokedex->ultimos_capturados, i);
-    //     free(elem); 
-    //     // int num = lista_borrar_de_posicion(pokedex->ultimos_capturados, i);
-    //     // printf("%i\n", num);
-    // }
-    // lista_destruir(pokedex->ultimos_capturados);
     
-    // size_t size = lista_elementos(pokedex->ultimos_vistos);
-    // for (size_t i = 0; i < size; i++){
-    //     particular_pokemon_t* elem = lista_elemento_en_posicion(pokedex->ultimos_vistos, i);
-    //     free(elem); 
-    //     // int num = lista_borrar_de_posicion(pokedex->ultimos_vistos, i);
-    //     // printf("%i", num);
-    // }
-    // lista_destruir(pokedex->ultimos_vistos);
-    
-    arbol_destruir(pokedex->pokemones);
+    //arbol_destruir(pokedex->pokemones);
+
     free(pokedex);
 }
 
