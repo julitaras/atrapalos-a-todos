@@ -6,6 +6,7 @@
 #define ERROR -1
 #define FORMATO_LECTURA_AVISTAMIENTOS "%i;%[^;];%[^;];%[^;];%i;%c\n"
 #define FORMATO_LECTURA_EVOLUCIONES "%i;%[^;];%i;%[^;];%[^\n]\n"
+#define ABB_RECORRER_PREORDEN 1
 
 /*Funcion comparadora de elementos*/
 int comparacion(void* elem1, void* elem2){
@@ -142,7 +143,7 @@ int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particu
             return ERROR;
         }
     }
-//revisar si queda lindo la func 
+    //revisar si queda lindo la func 
 
     particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
     if(!particular){
@@ -398,28 +399,59 @@ void pokedex_destruir(pokedex_t* pokedex){
     }
     lista_destruir(pokedex->ultimos_vistos);
 
-//REVISAR PARA QUE COSAS PIDO MEMORIA, HACER SEGUIMIENTO EN PAPEL
-    
     arbol_destruir(pokedex->pokemones);
 
     free(pokedex);
+}
+
+bool guardar(void* elem, void* extra){
+    if(!elem){
+        return true;
+    }
+
+    FILE* fichero;
+
+    fichero = fopen("pokedex.txt", "a");
+    
+    especie_pokemon_t* aux = ((especie_pokemon_t*) elem);
+    fprintf(fichero, "E;%i;%s;%s\n",  aux->numero, aux->nombre, aux->descripcion);
+    
+    for (size_t i = 0; i < lista_elementos(aux->pokemones); i++){
+        particular_pokemon_t* elem = lista_elemento_en_posicion(aux->pokemones, i);
+        
+        char capturado;
+        
+        if(elem->capturado){
+            capturado = 'S';
+        }else{
+            capturado = 'N';
+        }
+
+        fprintf(fichero, "P;%i;%s;%c\n",  elem->nivel, elem->nombre, capturado);
+    }
+
+    fclose(fichero);
+    return false;
 }
 
 int pokedex_apagar(pokedex_t* pokedex){
     if(!pokedex){
         return ERROR;
     }
-    //Tengo que guardar la info en pokedex.txt
+
     FILE* fichero;
 
     fichero = fopen("pokedex.txt", "wt");
-    fputs(pokedex->nombre_entrenador,fichero);
+    fprintf(fichero, "%s\n", pokedex->nombre_entrenador);
+    fclose(fichero);
+    abb_con_cada_elemento(pokedex->pokemones, ABB_RECORRER_PREORDEN, guardar, NULL);
+    //GUARDAR EL ARBOL EN PREORDEN
     //deberia recorrer el arbol y sus respectivas listas guardando. Para que al prenderla me quede igual. Deberia poner la raiz primero en el archivo.
     //Primer linea, nombre de entrenador
     //E;numero_pokemon;nombre_especie; descripción_especie
     //P;nombre_pokemon;nivel;capturado(S/N)
-    //GUARDAR EL ARBOL EN PREORDEN
-    fclose(fichero);
+
+    //chequear que tenga que ser por linea
     return EXITO;
 }
 
@@ -437,7 +469,8 @@ int main(){
     // pokedex_informacion(pokedex, 12, nombre);
     // nombre = "charly";
     // pokedex_informacion(pokedex, 12, nombre);
-    pokedex_destruir(pokedex);
+    pokedex_apagar(pokedex);
+    //pokedex_destruir(pokedex);
     // exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
     // pokedex_ultimos_capturados(pokedex);
     // pokedex_ultimos_vistos(pokedex);
