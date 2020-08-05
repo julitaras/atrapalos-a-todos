@@ -444,14 +444,9 @@ int pokedex_apagar(pokedex_t* pokedex){
     fichero = fopen("pokedex.txt", "wt");
     fprintf(fichero, "%s\n", pokedex->nombre_entrenador);
     fclose(fichero);
+    
     abb_con_cada_elemento(pokedex->pokemones, ABB_RECORRER_PREORDEN, guardar, NULL);
-    //GUARDAR EL ARBOL EN PREORDEN
-    //deberia recorrer el arbol y sus respectivas listas guardando. Para que al prenderla me quede igual. Deberia poner la raiz primero en el archivo.
-    //Primer linea, nombre de entrenador
-    //E;numero_pokemon;nombre_especie; descripción_especie
-    //P;nombre_pokemon;nivel;capturado(S/N)
 
-    //chequear que tenga que ser por linea
     return EXITO;
 }
 
