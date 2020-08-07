@@ -17,7 +17,9 @@
 #define FORMATO_LECTURA_POKEMONES "%[^;];%i;%c\n"
 #define FORMATO_LECTURA_ENTRENADOR "%[^\n]\n"
 
-/*Funcion comparadora de elementos*/
+/*
+* Funcion comparadora de elementos.
+*/
 int comparacion(void* elem1, void* elem2){
 
     if(!elem1 && elem2){
@@ -40,6 +42,10 @@ int comparacion(void* elem1, void* elem2){
     return 0;
 }
 
+/*
+* Se encarga de destruir la especie que nos llega por parametro.
+* Sera utilizada como funcion destructura en el arbol.
+*/
 void especie_destruir(void* especie){
     if(!especie){
         return;
@@ -84,6 +90,11 @@ pokedex_t* pokedex_crear(char entrenador[MAX_NOMBRE]){
     return pokedex;
 }
 
+/*
+* Agrega el pokemon particular que nos llega por parametro.
+* A la pila si es que el pokemon fue capturado 
+* y a la cola el pokemon que fue visto.
+*/
 int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_particular){
     
     if(!pokedex){
@@ -123,7 +134,10 @@ int agregar_pokemon_listas(pokedex_t* pokedex, particular_pokemon_t nuevo_partic
     return EXITO;
 }
 
-/*Agrega el pokemon a la respectiva estructura, con los datos provewnientes por parametros*/
+/*
+* Agrega la especie de un pokemon a la respectiva estructura,
+* con los datos provenientes por parametros.
+*/
 int agregar_especie(pokedex_t* pokedex, especie_pokemon_t nueva_especie, particular_pokemon_t nuevo_particular){
     
     if(!pokedex){
@@ -216,6 +230,11 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
     return EXITO;   
 }
 
+/*
+* Se encarga de evolucionar el pokemon que nos llega por parametros
+* buscandolo en la especie anterior, eliminadolo de la misma 
+* y colocandolo en la nueva especie.
+*/
 int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, especie_pokemon_t actual_especie, particular_pokemon_t particular_pokemon){
     
     if(!pokedex){
@@ -442,7 +461,13 @@ void pokedex_destruir(pokedex_t* pokedex){
     free(pokedex);
 }
 
-bool guardar(void* elem, void* extra){
+/*
+* Se encarga de guardar en el archivo 
+* la informacion que nos llega por parametro.
+* En caso de que el elemento que nos llega sea nulo,
+* se terminara la ejecucion de la misma.
+*/
+bool guardar_pokedex(void* elem, void* extra){
     if(!elem){
         return true;
     }
@@ -483,13 +508,12 @@ int pokedex_apagar(pokedex_t* pokedex){
     fprintf(fichero, "%s\n", pokedex->nombre_entrenador);
     fclose(fichero);
 
-    abb_con_cada_elemento(pokedex->pokemones, ABB_RECORRER_PREORDEN, guardar, NULL);
+    abb_con_cada_elemento(pokedex->pokemones, ABB_RECORRER_PREORDEN, guardar_pokedex, NULL);
 
     return EXITO;
 }
 
 pokedex_t* pokedex_prender(){
-    //Hay que leer archivo pokedex.txt
 
     FILE *pokemones_f = fopen("pokedex.txt", "r");
     if (pokemones_f == NULL) {
