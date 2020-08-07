@@ -7,6 +7,13 @@
 #define FORMATO_LECTURA_AVISTAMIENTOS "%i;%[^;];%[^;];%[^;];%i;%c\n"
 #define FORMATO_LECTURA_EVOLUCIONES "%i;%[^;];%i;%[^;];%[^\n]\n"
 #define ABB_RECORRER_PREORDEN 1
+#define PARTICULAR 'P'
+#define ESPECIE 'E'
+#define ESCRITURA_ESPECIES "%c;%i;%s;%s\n"
+#define ESCRITURA_POKEMONES "%c;%s;%i;%c\n"
+#define FORMATO_LECTURA_ESPECIES "%[^;];%i;%[^\n]\n"
+#define FORMATO_LECTURA_POKEMONES "%[^;];%i;%c\n"
+#define FORMATO_LECTURA_ENTRENADOR "%[^\n]\n"
 
 /*Funcion comparadora de elementos*/
 int comparacion(void* elem1, void* elem2){
@@ -225,7 +232,16 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
         strcpy(especie->nombre, nueva_especie.nombre);
         strcpy(especie->descripcion, nueva_especie.descripcion);
 
+        int ver = arbol_insertar(pokedex->pokemones, especie);
+        if(ver == ERROR){
+            return ERROR;
+        }
+
         especie_pokemon_t* especie_actual = arbol_buscar(pokedex->pokemones, &actual_especie);
+        if(!especie_actual){
+            return ERROR;
+        }
+
         for (size_t i = 0; i < lista_elementos(especie_actual->pokemones); i++){
             particular_pokemon_t* elem = lista_elemento_en_posicion(especie_actual->pokemones, i); 
 
@@ -235,10 +251,21 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
                     return ERROR;
                 }
                 
-                int exito = lista_insertar(especie->pokemones, elem);
+                particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
+                if(!particular){
+                    return ERROR;
+                }
+
+                strcpy(particular->nombre, elem->nombre);
+                particular->nivel = elem->nivel;
+                particular->capturado = elem->capturado;
+                
+                int exito = lista_insertar(especie->pokemones, particular);
                 if(exito == ERROR){
                     return ERROR;
                 }
+
+                free(elem);
 
                 int err = lista_borrar_de_posicion(especie_actual->pokemones, i);
                 if(err == ERROR){
@@ -247,13 +274,11 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
             }
         }
 
-        int ver = arbol_insertar(pokedex->pokemones, especie);
-        if(ver == ERROR){
-            return ERROR;
-        }
-
     }else{
         especie_pokemon_t* especie_actual = arbol_buscar(pokedex->pokemones, &actual_especie);
+        if(!especie_actual){
+            return ERROR;
+        }
         
         for (size_t i = 0; i < lista_elementos(especie_actual->pokemones); i++){
             
@@ -261,10 +286,21 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
 
             if(strcmp(elem->nombre, particular_pokemon.nombre) == 0){
                 
-                int exito = lista_insertar(especie->pokemones, elem);
+                particular_pokemon_t* particular = malloc(sizeof(particular_pokemon_t));
+                if(!particular){
+                    return ERROR;
+                }
+
+                strcpy(particular->nombre, elem->nombre);
+                particular->nivel = elem->nivel;
+                particular->capturado = elem->capturado;
+                
+                int exito = lista_insertar(especie->pokemones, particular);
                 if(exito == ERROR){
                     return ERROR;
                 }
+
+                free(elem);
 
                 int err = lista_borrar_de_posicion(especie_actual->pokemones, i);
                 if(err == ERROR){
@@ -414,7 +450,7 @@ bool guardar(void* elem, void* extra){
     fichero = fopen("pokedex.txt", "a");
     
     especie_pokemon_t* aux = ((especie_pokemon_t*) elem);
-    fprintf(fichero, "E;%i;%s;%s\n",  aux->numero, aux->nombre, aux->descripcion);
+    fprintf(fichero, ESCRITURA_ESPECIES, ESPECIE, aux->numero, aux->nombre, aux->descripcion);
     
     for (size_t i = 0; i < lista_elementos(aux->pokemones); i++){
         particular_pokemon_t* elem = lista_elemento_en_posicion(aux->pokemones, i);
@@ -427,7 +463,7 @@ bool guardar(void* elem, void* extra){
             capturado = 'N';
         }
 
-        fprintf(fichero, "P;%i;%s;%c\n",  elem->nivel, elem->nombre, capturado);
+        fprintf(fichero, ESCRITURA_POKEMONES, PARTICULAR, elem->nombre, elem->nivel, capturado);
     }
 
     fclose(fichero);
@@ -444,15 +480,33 @@ int pokedex_apagar(pokedex_t* pokedex){
     fichero = fopen("pokedex.txt", "wt");
     fprintf(fichero, "%s\n", pokedex->nombre_entrenador);
     fclose(fichero);
-    
+
     abb_con_cada_elemento(pokedex->pokemones, ABB_RECORRER_PREORDEN, guardar, NULL);
 
     return EXITO;
 }
 
+pokedex_t* pokedex_prender(){
+    //Hay que leer archivo pokedex.txt
+
+    FILE *pokemones_f = fopen("pokedex.txt", "r");
+    if (pokemones_f == NULL) {
+        return NULL;
+    }
+
+    // int leidos = 0;
+    // especie_pokemon_t nueva_especie;
+    // especie_pokemon_t actual_especie;
+    // particular_pokemon_t particular_pokemon;
+    //Ojo que primero se leee el nom,bre del entrenador 
+    
+    
+    return NULL;
+}
+
 int main(){
     char* ruta_avistamientos = "avistamientos.txt";
-    // char* ruta_evoluciones = "evoluciones.txt";
+    char* ruta_evoluciones = "evoluciones.txt";
     pokedex_t* pokedex = pokedex_crear("JULIETA");
     int exito = pokedex_avistar(pokedex, ruta_avistamientos);
     
@@ -464,11 +518,11 @@ int main(){
     // pokedex_informacion(pokedex, 12, nombre);
     // nombre = "charly";
     // pokedex_informacion(pokedex, 12, nombre);
-    pokedex_apagar(pokedex);
-    //pokedex_destruir(pokedex);
-    // exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
+    exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
+    //pokedex_apagar(pokedex);
     // pokedex_ultimos_capturados(pokedex);
     // pokedex_ultimos_vistos(pokedex);
+    pokedex_destruir(pokedex);
     printf("%i", exito);
     return 1;
 }
