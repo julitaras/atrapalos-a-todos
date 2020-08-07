@@ -11,11 +11,11 @@
 #define ESPECIE 'E'
 #define CAPTURADO 'S'
 #define NO_CAPTURADO 'N'
-#define ESCRITURA_ESPECIES "%c;%i;%s;%s\n"
+#define ESCRITURA_ESPECIES "%c;%s;%i;%s\n"
 #define ESCRITURA_POKEMONES "%c;%s;%i;%c\n"
+#define FORMATO_LECTURA_ENTRENADOR "%[^\n]\n"
 #define FORMATO_LECTURA_ESPECIES "%[^;];%i;%[^\n]\n"
 #define FORMATO_LECTURA_POKEMONES "%[^;];%i;%c\n"
-#define FORMATO_LECTURA_ENTRENADOR "%[^\n]\n"
 
 /*
 * Funcion comparadora de elementos.
@@ -477,7 +477,7 @@ bool guardar_pokedex(void* elem, void* extra){
     fichero = fopen("pokedex.txt", "a");
     
     especie_pokemon_t* aux = ((especie_pokemon_t*) elem);
-    fprintf(fichero, ESCRITURA_ESPECIES, ESPECIE, aux->numero, aux->nombre, aux->descripcion);
+    fprintf(fichero, ESCRITURA_ESPECIES, ESPECIE, aux->nombre, aux->numero, aux->descripcion);
     
     for (size_t i = 0; i < lista_elementos(aux->pokemones); i++){
         particular_pokemon_t* elem = lista_elemento_en_posicion(aux->pokemones, i);
@@ -513,26 +513,33 @@ int pokedex_apagar(pokedex_t* pokedex){
     return EXITO;
 }
 
-pokedex_t* pokedex_prender(){
+// pokedex_t* pokedex_prender(){
 
-    FILE *pokemones_f = fopen("pokedex.txt", "r");
-    if (pokemones_f == NULL) {
-        return NULL;
-    }
+//     FILE *pokemones_f = fopen("pokedex.txt", "r");
+//     if (pokemones_f == NULL) {
+//         return NULL;
+//     }
 
-    // int leidos = 0;
-    // especie_pokemon_t nueva_especie;
-    // especie_pokemon_t actual_especie;
-    // particular_pokemon_t particular_pokemon;
-    //Ojo que primero se leee el nom,bre del entrenador 
+//     // int leidos = 0;
+//     especie_pokemon_t actual_especie;
+//     particular_pokemon_t particular_pokemon;
+//     char* nombre;
+//     int leidos = fscanf(pokemones_f, FORMATO_LECTURA_ENTRENADOR, nombre);
+//         if(leidos == 1){
+//             //leemos entrenador con while y adentro leemos particular con while
+//             while((leidos = fscanf(pokemones_f, "%c;", ESPECIE)) == 1){
+
+//             }
+//         }
+//     //Ojo que primero se leee el nom,bre del entrenador 
     
     
-    return NULL;
-}
+//     return NULL;
+// }
 
 int main(){
     char* ruta_avistamientos = "avistamientos.txt";
-    char* ruta_evoluciones = "evoluciones.txt";
+   // char* ruta_evoluciones = "evoluciones.txt";
     pokedex_t* pokedex = pokedex_crear("JULIETA");
     int exito = pokedex_avistar(pokedex, ruta_avistamientos);
     
@@ -544,8 +551,8 @@ int main(){
     // pokedex_informacion(pokedex, 12, nombre);
     // nombre = "charly";
     // pokedex_informacion(pokedex, 12, nombre);
-    exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
-    //pokedex_apagar(pokedex);
+    //exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
+    pokedex_apagar(pokedex);
     // pokedex_ultimos_capturados(pokedex);
     // pokedex_ultimos_vistos(pokedex);
     pokedex_destruir(pokedex);
