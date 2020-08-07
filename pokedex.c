@@ -14,8 +14,8 @@
 #define ESCRITURA_ESPECIES "%c;%s;%i;%s\n"
 #define ESCRITURA_POKEMONES "%c;%s;%i;%c\n"
 #define FORMATO_LECTURA_ENTRENADOR "%[^\n]\n"
-#define FORMATO_LECTURA_ESPECIES "%[^;];%i;%[^\n]\n"
-#define FORMATO_LECTURA_POKEMONES "%[^;];%i;%c\n"
+#define FORMATO_LECTURA_ESPECIES ";%[^;];%i;%[^\n]\n"
+#define FORMATO_LECTURA_POKEMONES ";%[^;];%i;%c\n"
 
 /*
 * Funcion comparadora de elementos.
@@ -513,29 +513,42 @@ int pokedex_apagar(pokedex_t* pokedex){
     return EXITO;
 }
 
-// pokedex_t* pokedex_prender(){
+pokedex_t* pokedex_prender(){
 
-//     FILE *pokemones_f = fopen("pokedex.txt", "r");
-//     if (pokemones_f == NULL) {
-//         return NULL;
-//     }
+    FILE *pokemones_f = fopen("pokedex.txt", "r");
+    if (pokemones_f == NULL) {
+        return NULL;
+    }
 
-//     // int leidos = 0;
-//     especie_pokemon_t actual_especie;
-//     particular_pokemon_t particular_pokemon;
-//     char* nombre;
-//     int leidos = fscanf(pokemones_f, FORMATO_LECTURA_ENTRENADOR, nombre);
-//         if(leidos == 1){
-//             //leemos entrenador con while y adentro leemos particular con while
-//             while((leidos = fscanf(pokemones_f, "%c;", ESPECIE)) == 1){
-
-//             }
-//         }
-//     //Ojo que primero se leee el nom,bre del entrenador 
-    
-    
-//     return NULL;
-// }
+    // int leidos = 0;
+    especie_pokemon_t especie_leida;
+    particular_pokemon_t pokemon_leido;
+    pokedex_t pokedex;
+    char especie;
+    char capturado;
+    int leidos = fscanf(pokemones_f, FORMATO_LECTURA_ENTRENADOR, pokedex.nombre_entrenador);
+        if(leidos == 1){
+            while((leidos = fscanf(pokemones_f, "%c", &especie)) == 1){
+                if(especie == ESPECIE){
+                    printf("ES LA ESPECIE:\n");
+                    while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_ESPECIES, especie_leida.nombre, &especie_leida.numero, especie_leida.descripcion)) == 3){
+                             printf("\t%s\n", especie_leida.nombre);
+                              printf("\t%i\n", especie_leida.numero);
+                               printf("\t%s\n", especie_leida.descripcion);
+                    }
+                }else{
+                    printf("ES EL PARTICULAR:\n");
+                    while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_POKEMONES, pokemon_leido.nombre, &pokemon_leido.nivel, &capturado)) == 3){
+                         printf("\t%s\n", pokemon_leido.nombre);
+                              printf("\t%i\n", pokemon_leido.nivel);
+                               printf("\t%c\n", capturado);
+                    }
+                }
+            }
+        }
+    //pedir memoria ?
+    return NULL;
+}
 
 int main(){
     char* ruta_avistamientos = "avistamientos.txt";
@@ -553,6 +566,7 @@ int main(){
     // pokedex_informacion(pokedex, 12, nombre);
     //exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
     pokedex_apagar(pokedex);
+    pokedex_prender();
     // pokedex_ultimos_capturados(pokedex);
     // pokedex_ultimos_vistos(pokedex);
     pokedex_destruir(pokedex);
