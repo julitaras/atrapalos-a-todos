@@ -9,6 +9,8 @@
 #define ABB_RECORRER_PREORDEN 1
 #define PARTICULAR 'P'
 #define ESPECIE 'E'
+#define CAPTURADO 'S'
+#define NO_CAPTURADO 'N'
 #define ESCRITURA_ESPECIES "%c;%i;%s;%s\n"
 #define ESCRITURA_POKEMONES "%c;%s;%i;%c\n"
 #define FORMATO_LECTURA_ESPECIES "%[^;];%i;%[^\n]\n"
@@ -190,7 +192,7 @@ int pokedex_avistar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
     char capturado;
     
     while((leidos = fscanf(pokemones_f, FORMATO_LECTURA_AVISTAMIENTOS, &nuevo_pokemon.numero, nuevo_pokemon.nombre, nuevo_pokemon.descripcion, particular_pokemon.nombre, &particular_pokemon.nivel, &capturado)) == 6){
-        if(capturado == 'N'){
+        if(capturado == CAPTURADO){
             particular_pokemon.capturado = false;
         }else{
             particular_pokemon.capturado = true;
@@ -458,9 +460,9 @@ bool guardar(void* elem, void* extra){
         char capturado;
         
         if(elem->capturado){
-            capturado = 'S';
+            capturado = CAPTURADO;
         }else{
-            capturado = 'N';
+            capturado = NO_CAPTURADO;
         }
 
         fprintf(fichero, ESCRITURA_POKEMONES, PARTICULAR, elem->nombre, elem->nivel, capturado);
