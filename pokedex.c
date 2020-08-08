@@ -269,6 +269,7 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
 
         int ver = arbol_insertar(pokedex->pokemones, especie);
         if(ver == ERROR){
+            free(especie);
             return ERROR;
         }
 
@@ -297,6 +298,7 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
                 
                 int exito = lista_insertar(especie->pokemones, particular);
                 if(exito == ERROR){
+                    free(particular);
                     return ERROR;
                 }
 
@@ -332,6 +334,7 @@ int evolucionar_pokemon(pokedex_t* pokedex, especie_pokemon_t nueva_especie, esp
                 
                 int exito = lista_insertar(especie->pokemones, particular);
                 if(exito == ERROR){
+                    free(particular);
                     return ERROR;
                 }
 
@@ -370,6 +373,9 @@ int pokedex_evolucionar(pokedex_t* pokedex, char ruta_archivo[MAX_RUTA]){
             return ERROR;
         }
     }
+
+    fclose(pokemones_f);
+
     return EXITO;
 }
 
@@ -545,6 +551,10 @@ pokedex_t* pokedex_prender(){
 
     if(leidos == 1){
       pokedex = pokedex_crear(name);
+
+      if(!pokedex){
+        return NULL;
+      }
         
         while((leidos = fscanf(pokemones_f, "%c", &especie)) == 1){
             if(especie == ESPECIE){
@@ -579,33 +589,7 @@ pokedex_t* pokedex_prender(){
             }
         }
     }
-
+    fclose(pokemones_f);
+    
     return pokedex;
-    
-}
-
-int main(){
-    char* ruta_avistamientos = "avistamientos.txt";
-   char* ruta_evoluciones = "evoluciones.txt";
-    pokedex_t* pokedex = pokedex_crear("JULIETA");
-    int exito = pokedex_avistar(pokedex, ruta_avistamientos);
-    
-    char* nombre = "";
-    pokedex_informacion(pokedex, 25, nombre);
-    nombre = "charly";
-    pokedex_informacion(pokedex, 1, nombre);
-    nombre = "Danaus";
-    pokedex_informacion(pokedex, 12, nombre);
-    nombre = "charly";
-    pokedex_informacion(pokedex, 12, nombre);
-    exito = pokedex_evolucionar(pokedex, ruta_evoluciones);
-    pokedex_apagar(pokedex);
-    pokedex_destruir(pokedex);
-   pokedex = pokedex_prender();
-   printf("Nombre: %s\n", pokedex->nombre_entrenador);
-    // pokedex_ultimos_capturados(pokedex);
-    // pokedex_ultimos_vistos(pokedex);
-    pokedex_destruir(pokedex);
-    printf("%i", exito);
-    return 1;
 }
