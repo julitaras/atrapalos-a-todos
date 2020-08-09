@@ -12,7 +12,10 @@
 void mostrar_ayuda(pokedex_t** pkd);
 
 bool comando_encender(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd == NULL){
+    if(describir){
+        if(*pkd){
+            return false;
+        }
         printf(B_COLOR_BLANCO "I:" B_COLOR_NORMAL COLOR_BLANCO " Inicia la pokedex\n");
         return false;
     }
@@ -21,15 +24,24 @@ bool comando_encender(char letra, pokedex_t** pkd, bool describir){
         return false;
     }
 
-    if(*pkd){
-        printf(COLOR_ROJO"\nComando invalido. Por favor seleccione un comando valido.\n\n");
-        return true;
-    }
-
-    if(*pkd == NULL){
-        *pkd = pokedex_prender();
-        printf(COLOR_VERDE "Pokedex encendida con exito!\n\n");
+    if(!pkd){
+        pokedex_t* pk = pokedex_prender();
         
+        if(pk){
+            printf(COLOR_VERDE "Pokedex encendida con exito!\n\n");
+            pkd = &pk;
+            return true;
+        }
+            
+        char nombre[MAX_NOMBRE];
+        printf(COLOR_NORMAL "\nIngresa tu nombre para inicializar la pokedex:\n");
+        scanf("%s", nombre);
+        pk = pokedex_crear(nombre);
+        if(pk){
+            printf(COLOR_VERDE "Pokedex encendida con exito!\n\n");
+            pkd = &pk;
+        }
+
         return true;
     }
 
@@ -37,7 +49,12 @@ bool comando_encender(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_evolucionar(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd && !arbol_vacio((*pkd)->pokemones)){
+
+    if(describir){
+        if(*pkd && !arbol_vacio((*pkd)->pokemones)){
+            return false;
+        }
+
         printf(B_COLOR_BLANCO "E:" B_COLOR_NORMAL COLOR_BLANCO " Actualiza la Pokedex evolucionando los Pokémon que así lo hayan hecho\n");
         return false;
     }
@@ -68,7 +85,12 @@ bool comando_evolucionar(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_apagar(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd){
+
+    if(describir){
+        if(*pkd){
+            return false;
+        }
+
         printf(B_COLOR_BLANCO "G:" B_COLOR_NORMAL COLOR_BLANCO " Guarda la pokedex\n");
         return false;
     }
@@ -99,7 +121,12 @@ bool comando_apagar(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_avistar(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd && arbol_vacio((*pkd)->pokemones)){
+    
+    if(describir){
+        if(*pkd && arbol_vacio((*pkd)->pokemones)){
+            return false;
+        }
+
         printf(B_COLOR_BLANCO "A:" B_COLOR_NORMAL COLOR_BLANCO " Actualiza la Pokedex incorporando a ella los Pokémon avistados \n");
         return false;
     }
@@ -128,7 +155,10 @@ bool comando_avistar(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_ultimos_capturados(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd && !lista_vacia((*pkd)->ultimos_capturados)){
+    if(describir){
+        if(*pkd && !lista_vacia((*pkd)->ultimos_capturados)){
+            return false;
+        }
         printf(B_COLOR_BLANCO "C:" B_COLOR_NORMAL COLOR_BLANCO " Muestra los últimos Pokémones capturados \n");
         return false;
     }
@@ -152,7 +182,11 @@ bool comando_ultimos_capturados(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_ultimos_vistos(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd && !lista_vacia((*pkd)->ultimos_vistos)){
+    if(describir){
+        if(*pkd && !lista_vacia((*pkd)->ultimos_vistos)){
+            return false;
+        }
+
         printf(B_COLOR_BLANCO "V:" B_COLOR_NORMAL COLOR_BLANCO " Muestra los últimos Pokémones vistos \n");
         return false;
     }
@@ -176,7 +210,10 @@ bool comando_ultimos_vistos(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_informacion_especie(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd){
+    if(describir){
+        if(*pkd){
+            return false;
+        }
         printf(B_COLOR_BLANCO "M:" B_COLOR_NORMAL COLOR_BLANCO " Muestra la información de la especie \n");
         return false;
     }
@@ -205,7 +242,11 @@ bool comando_informacion_especie(char letra, pokedex_t** pkd, bool describir){
 }
 
 bool comando_informacion_pokemon(char letra, pokedex_t** pkd, bool describir){
-    if(describir && *pkd){
+    if(describir){
+        if(*pkd){
+            return false;
+        }
+
         printf(B_COLOR_BLANCO "P:" B_COLOR_NORMAL COLOR_BLANCO " Muestra la información de un Pokémon de una determinada especie \n");
         return false;
     }
