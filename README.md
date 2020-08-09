@@ -67,6 +67,19 @@ guarda a un archivo (pokedex.txt) y al prenderse la información es recuperada d
     `````c
         ./pokedex
     `````
-## Introduccion 
 
-- El programa se encarga de crear, cargar, mostrar una pokedex.
+## Introduccion <a name = "introduccion"></a>
+
+El programa consiste en crear una pokedex teniendo la opcion de hacerlo a traves de un archivo llamado `pokedex.txt` (Se adjunta un ejemplo de como debera ir cargado) en donde cargaremos en la primer linea nuestro nombre, convirtiendonos asi en el entrenador dueño de la pokedex. Sea el caso de que este archivo no exita, el programa pedira ingresar el nombre del dueño de la pokedex.
+
+Luego de este primer paso, podra llenar la pokedex a traves del archivo de `avistamientos.txt` (Se adjunta un ejemplo de como debera ir cargado).
+
+A partir de realizar esta accion podra hacer otras cosas como evolucionar pokemones a trves del archivo `evoluciones.txt` (Se adjunta un ejemplo de como debera ir cargado), tambien podra ver los pokemones recientemente vistos y/o capturados.
+
+Por otro lado, tambien podra buscar una especie en particular indicando el numero ed especie y a su vez, podra buscar un pokemon en especifico indicando numero de especie que corresponde y nombre de pokemon. Sea el caso de que no exista la especie o no exista el pokemon, se le indicara que el pokemon/especie buscada es desconocido.
+
+Podra guardar la pokedex, haciendo que todo su progreso se almacene en el archivo `pokedex.txt`. 
+
+Siempre aparecera el menu de ayuda, donde se indica cuales son los comandos que tiene habiltados en el momento.
+
+Podra salir del programa siempre que lo desee, ingresando por pantalla el comando que corresponda.
