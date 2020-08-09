@@ -11,6 +11,7 @@
 
 void mostrar_ayuda(pokedex_t** pkd);
 
+/*Se encarga de prender la pokedex y de saber cuando describirse*/
 bool comando_encender(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         if(*pkd){
@@ -49,6 +50,7 @@ bool comando_encender(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de evolucionar la pokedex y de saber cuando describirse*/
 bool comando_evolucionar(char letra, pokedex_t** pkd, bool describir){
 
     if(describir){
@@ -85,6 +87,7 @@ bool comando_evolucionar(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de apagar la pokedex y de saber cuando describirse*/
 bool comando_apagar(char letra, pokedex_t** pkd, bool describir){
 
     if(describir){
@@ -121,6 +124,7 @@ bool comando_apagar(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de avistar la pokedex y de saber cuando describirse*/
 bool comando_avistar(char letra, pokedex_t** pkd, bool describir){
     
     if(describir){
@@ -155,6 +159,7 @@ bool comando_avistar(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de mostrar los ultimos capturados y de saber cuando describirse*/
 bool comando_ultimos_capturados(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         if(*pkd && !lista_vacia((*pkd)->ultimos_capturados)){
@@ -182,6 +187,7 @@ bool comando_ultimos_capturados(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de mostrar los ultimos pokemones vistos y de saber cuando describirse*/
 bool comando_ultimos_vistos(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         if( *pkd && !lista_vacia((*pkd)->ultimos_vistos)){
@@ -210,6 +216,7 @@ bool comando_ultimos_vistos(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de mostrar la informacion de una especie y de saber cuando describirse*/
 bool comando_informacion_especie(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         if(*pkd){
@@ -243,6 +250,7 @@ bool comando_informacion_especie(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de mostrar la informacion de un pokemon, de saber cuando describirse*/
 bool comando_informacion_pokemon(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         if(*pkd){
@@ -279,6 +287,7 @@ bool comando_informacion_pokemon(char letra, pokedex_t** pkd, bool describir){
     return false;
 }
 
+/*Se encarga de salir del programa y de saber cuando describirse*/
 bool comando_salir(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         printf(B_COLOR_BLANCO "S:" B_COLOR_NORMAL COLOR_BLANCO " Salir del programa \n");
@@ -293,6 +302,7 @@ bool comando_salir(char letra, pokedex_t** pkd, bool describir){
     return true;
 }
 
+/*Muestra los comandos disponibles y de saber cuando describirse*/
 bool comando_ayuda(char letra, pokedex_t** pkd, bool describir){
     if(describir){
         printf(B_COLOR_BLANCO "H:" B_COLOR_NORMAL COLOR_BLANCO " Lista de comandos \n");
@@ -309,6 +319,7 @@ bool comando_ayuda(char letra, pokedex_t** pkd, bool describir){
 
 bool (*comandos[])(char, pokedex_t**, bool) = {comando_encender , comando_apagar, comando_evolucionar, comando_avistar, comando_ultimos_capturados, comando_ultimos_vistos, comando_informacion_especie, comando_informacion_pokemon, comando_salir, comando_ayuda};
 
+/*Se encarga de llamr a las funciones haciendo que se ejecute la correspondiente*/
 void despachar_comando(char letra, pokedex_t** pkd){
     bool ejecutando = false;
     for (size_t i = 0; !ejecutando && comandos[i]; i++){
@@ -319,6 +330,7 @@ void despachar_comando(char letra, pokedex_t** pkd){
     }
 }
 
+/*Se engarga de llamar a las funciones para que se describan*/
 void mostrar_ayuda(pokedex_t** pkd){
     bool ejecutando = false;
     printf(COLOR_BLANCO "\nEstas opciones son las que tenes habilitadas:\n");
