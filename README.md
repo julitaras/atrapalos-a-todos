@@ -59,7 +59,7 @@ guarda a un archivo (pokedex.txt) y al prenderse la información es recuperada d
 
 - ¿Cómo compilamos?
     `````c
-    gcc pokedex.c lista.c abb.c main.c  pokedex_pruebas.c -Wall -Werror -Wconversion -std=c99 -o pokedex -g
+    gcc pokedex.c lista.c abb.c main.c  pokedex_pruebas.c
     `````
 
 - ¿Cómo ejecutamos ?
@@ -67,7 +67,6 @@ guarda a un archivo (pokedex.txt) y al prenderse la información es recuperada d
     `````c
         ./pokedex
     `````
-
 ## Introduccion <a name = "introduccion"></a>
 
 El programa consiste en crear una pokedex teniendo la opcion de hacerlo a traves de un archivo llamado `pokedex.txt` (Se adjunta un ejemplo de como debera ir cargado) en donde cargaremos en la primer linea nuestro nombre, convirtiendonos asi en el entrenador dueño de la pokedex. Sea el caso de que este archivo no exita, el programa pedira ingresar el nombre del dueño de la pokedex.
@@ -83,3 +82,6 @@ Podra guardar la pokedex, haciendo que todo su progreso se almacene en el archiv
 Siempre aparecera el menu de ayuda, donde se indica cuales son los comandos que tiene habiltados en el momento.
 
 Podra salir del programa siempre que lo desee, ingresando por pantalla el comando que corresponda.
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbMTUwNTM0NDkzNl19
+-->
